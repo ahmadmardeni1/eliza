@@ -40,7 +40,6 @@ async function processPdfFromUrl(
 
 async function injectArweavePapers(runtime: IAgentRuntime) {
     try {
-        console.log(runtime.documentsManager, "ad");
         // Process both papers
         const whitePaperContent = await processPdfFromUrl(
             runtime,
