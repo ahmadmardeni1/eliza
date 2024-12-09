@@ -201,6 +201,9 @@ importers:
       '@elizaos/plugin-zksync-era':
         specifier: workspace:*
         version: link:../packages/plugin-zksync-era
+      '@duneanalytics/client-sdk':
+        specifier: ^0.2.4
+        version: 0.2.4(encoding@0.1.13)
       readline:
         specifier: 1.3.0
         version: 1.3.0
@@ -3653,6 +3656,9 @@ packages:
   '@docusaurus/utils@3.6.3':
     resolution: {integrity: sha512-0R/FR3bKVl4yl8QwbL4TYFfR+OXBRpVUaTJdENapBGR3YMwfM6/JnhGilWQO8AOwPJGtGoDK7ib8+8UF9f3OZQ==}
     engines: {node: '>=18.0'}
+
+  '@duneanalytics/client-sdk@0.2.4':
+    resolution: {integrity: sha512-Znr/AIqq+XBh3ezyvNCEbXn2re6pYeLiWQRJezRHh5lI0EikZNQya1jlQTTr3ZTJi7L8aA5GjEp7RyhF/vfSeA==}
 
   '@echogarden/audio-io@0.2.3':
     resolution: {integrity: sha512-3p6oGhuCvfwcEWE52hJ2pMAY05qz1UeHXuITp+ijG2b5z3qizJT4IsP6ZIfiXYg8pW8maUnbwPOLbazpJv2KYQ==}
@@ -10308,6 +10314,10 @@ packages:
     resolution: {integrity: sha512-JeMq7fEshyepOWDfcfHK06N3MhyPhz++vtqWhMT5O9A3K42rdsEDpfdVqjaqaAhsw6a+ZqeDvQVtD0hFHQWrzg==}
     engines: {node: '>= 0.6.0'}
 
+  deprecated@0.0.2:
+    resolution: {integrity: sha512-vt7tvBJtDu1pmn8HTUc/Q3lSkrgah4Tl5IbbBzqu33jcPQlihAGAO9yD4ubfhFh/xyXD+HbUX1Dg6PwnARWxag==}
+    engines: {node: '>= 0.9'}
+
   deprecation@2.3.1:
     resolution: {integrity: sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ==}
 
@@ -13377,6 +13387,10 @@ packages:
   log-update@6.1.0:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
+
+  loglevel@1.9.2:
+    resolution: {integrity: sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==}
+    engines: {node: '>= 0.6.0'}
 
   long@5.2.3:
     resolution: {integrity: sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==}
@@ -22435,6 +22449,14 @@ snapshots:
       - typescript
       - uglify-js
       - webpack-cli
+
+  '@duneanalytics/client-sdk@0.2.4(encoding@0.1.13)':
+    dependencies:
+      deprecated: 0.0.2
+      cross-fetch: 4.0.0(encoding@0.1.13)
+      loglevel: 1.9.2
+    transitivePeerDependencies:
+      - encoding
 
   '@echogarden/audio-io@0.2.3': {}
 
@@ -35447,6 +35469,8 @@ snapshots:
       slice-ansi: 7.1.0
       strip-ansi: 7.1.0
       wrap-ansi: 9.0.0
+
+  loglevel@1.9.2: {}
 
   long@5.2.3: {}
 
