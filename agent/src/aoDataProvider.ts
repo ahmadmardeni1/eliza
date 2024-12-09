@@ -30,7 +30,6 @@ async function fetchArweaveData() {
 
         const responseData = await response.json();
         const data = responseData.data;
-        console.log(data);
         const arweaveKey = Object.keys(data)[0];
         const arweaveInfo = data[arweaveKey];
         return arweaveInfo.quote.USD;
