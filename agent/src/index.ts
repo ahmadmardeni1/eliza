@@ -46,6 +46,7 @@ import yargs from "yargs";
 
 import { mainCharacter } from "../mainCharacter.ts";
 import aoDataProvider from "./aoDataProvider";
+import { injectArweavePapers } from "./pdfReader.ts";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -320,10 +321,10 @@ export async function initializeClients(
         if (telegramClient) clients.push(telegramClient);
     }
 
-    if (clientTypes.includes("twitter")) {
-        const twitterClients = await TwitterClientInterface.start(runtime);
-        clients.push(twitterClients);
-    }
+    // if (clientTypes.includes("twitter")) {
+    //     const twitterClients = await TwitterClientInterface.start(runtime);
+    //     clients.push(twitterClients);
+    // }
 
     if (character.plugins?.length > 0) {
         for (const plugin of character.plugins) {
@@ -442,7 +443,7 @@ async function startAgent(character: Character, directClient) {
         const clients = await initializeClients(character, runtime);
 
         directClient.registerAgent(runtime);
-
+        await injectArweavePapers(runtime);
         return clients;
     } catch (error) {
         elizaLogger.error(
