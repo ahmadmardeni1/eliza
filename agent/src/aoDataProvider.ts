@@ -30,12 +30,38 @@ async function fetchArweaveData() {
 
         const responseData = await response.json();
         const data = responseData.data;
+        console.log(data);
         const arweaveKey = Object.keys(data)[0];
         const arweaveInfo = data[arweaveKey];
         return arweaveInfo.quote.USD;
     } catch (error) {
         console.error("Error fetching Arweave data:", error);
         return null;
+    }
+}
+async function getArweaveStats() {
+    try {
+        const response = await fetch(
+            "https://api.viewblock.io/arweave/stats?fast=true&network=mainnet",
+            {
+                method: "GET",
+                headers: {
+                    Accept: "*/*",
+                    Origin: "https://viewblock.io",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        return data.info;
+    } catch (error) {
+        console.log(error);
+        console.error("Error fetching Arweave stats:", error);
     }
 }
 
@@ -77,14 +103,29 @@ const aoDataProvider: Provider = {
                     dune,
                     QUERIES.TOTAL_DEPOSITORS
                 ),
+                depositRatio: (await fetchQueryResult(dune, 4028682)).map(
+                    (row) => ({
+                        token: row.Token,
+                        accumulatedValue: row.AccumVal, // Convert to millions
+                    })
+                ),
             };
-            console.log("Raw results:", results);
 
             const formattedData = {
                 timestamp: new Date().toISOString(),
                 totalDeposits: formatNumericValue(
                     results.totalDeposits[0]?.Total_Value
                 ),
+                depositByToken: {
+                    dai: formatNumericValue(
+                        results.depositRatio.find((r) => r.token === "DAI")
+                            ?.accumulatedValue || 0
+                    ),
+                    stEth: formatNumericValue(
+                        results.depositRatio.find((r) => r.token === "stETH")
+                            ?.accumulatedValue || 0
+                    ),
+                },
                 totalDepositors: {
                     dai: formatNumericValue(results.totalDepositors[0]?.No_DAI),
                     stEth: formatNumericValue(
@@ -95,12 +136,13 @@ const aoDataProvider: Provider = {
                     ),
                 },
             };
+
             const tvlInMillions = formattedData.totalDeposits * 1000000; // Convert to absolute value
             const similarChains = await getChainsByTVLRange(
                 tvlInMillions - 200000000,
                 tvlInMillions + 200000000
             );
-
+            const arweaveStats = await getArweaveStats();
             const competitorInfo = similarChains
                 .map(
                     (chain) =>
@@ -111,8 +153,11 @@ const aoDataProvider: Provider = {
             const arweaveData = await fetchArweaveData();
 
             return `
+
 AO Data Metrics:
-- Total Deposits: ${formattedData.totalDeposits}M$
+- Total Deposits: ${formattedData.totalDeposits} M$
+- DAI Deposits: ${formattedData.depositByToken.dai} M$
+- stETH Deposits: ${formattedData.depositByToken.stEth} M$
 - DAI Depositors: ${formattedData.totalDepositors.dai}
 - stETH Depositors: ${formattedData.totalDepositors.stEth}
 - Total Depositors: ${formattedData.totalDepositors.total}
@@ -124,7 +169,20 @@ Arweave Market Data:
 - FDV: $${(arweaveData?.fully_diluted_market_cap / 1000000).toFixed(2)}M
 - Circulating Supply: ${Math.round(arweaveData?.circulating_supply || 0).toLocaleString()} AR
 
-Competitors (Chains with similar TVL):
+Arweave Stats:
+- Height: ${arweaveStats.height}
+- TPS: ${arweaveStats.tps.toFixed(2)}
+- Total Transactions: ${(arweaveStats.txs / 1000000).toFixed(2)}M
+- Active Addresses: ${arweaveStats.addresses.toLocaleString()}
+- Smart Contracts: ${arweaveStats.contracts.toLocaleString()}
+- Network Size: ${arweaveStats.networkSize.toFixed(2)} GB
+- Proof Rate: ${(arweaveStats.proofRate / 1000000).toFixed(2)}M
+- Storage Cost: ${(arweaveStats.storageCost / 1000000000).toFixed(2)}B
+- Active Nodes: ${arweaveStats.nodes}
+
+AO TVL Comparison:
+- AO TVL: $${formattedData.totalDeposits}M
+- Competitors (Chains with similar TVL):
 - ${competitorInfo}
 `.trim();
         } catch (error) {

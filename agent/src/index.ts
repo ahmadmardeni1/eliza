@@ -63,6 +63,7 @@ import yargs from "yargs";
 
 import { mainCharacter } from "../mainCharacter.ts";
 import aoDataProvider from "./aoDataProvider";
+import { injectArweavePapers } from "./pdfReader.ts";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -682,6 +683,8 @@ async function startAgent(
         elizaLogger.debug(`Started ${character.name} as ${runtime.agentId}`);
 
         return runtime;
+        await injectArweavePapers(runtime);
+        return clients;
     } catch (error) {
         elizaLogger.error(
             `Error starting agent for character ${character.name}:`,
