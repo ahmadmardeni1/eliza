@@ -321,10 +321,10 @@ export async function initializeClients(
         if (telegramClient) clients.push(telegramClient);
     }
 
-    // if (clientTypes.includes("twitter")) {
-    //     const twitterClients = await TwitterClientInterface.start(runtime);
-    //     clients.push(twitterClients);
-    // }
+    if (clientTypes.includes("twitter")) {
+        const twitterClients = await TwitterClientInterface.start(runtime);
+        clients.push(twitterClients);
+    }
 
     if (character.plugins?.length > 0) {
         for (const plugin of character.plugins) {
