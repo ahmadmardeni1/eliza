@@ -167,6 +167,29 @@ async function getNetworkStats(): Promise<[]> {
     }
 }
 
+// Add cache interface and helper
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+const cache: Record<string, CacheEntry<any>> = {};
+
+function getCachedData<T>(key: string, fetchFn: () => Promise<T>): Promise<T> {
+    const cached = cache[key];
+    const now = Date.now();
+
+    if (cached && now - cached.timestamp < CACHE_DURATION) {
+        return Promise.resolve(cached.data);
+    }
+
+    return fetchFn().then((data) => {
+        cache[key] = { data, timestamp: now };
+        return data;
+    });
+}
+
 const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
@@ -221,27 +244,30 @@ const aoDataProvider: Provider = {
                 },
             };
 
-            const tvlInMillions = formattedData.totalDeposits * 1000000; // Convert to absolute value
-            const similarChains = await getChainsByTVLRange(
-                tvlInMillions - 200000000,
-                tvlInMillions + 200000000
-            );
-            const arweaveStats = await getArweaveStats();
-            const competitorInfo = similarChains
-                .map(
-                    (chain) =>
-                        `${chain.name}: $${(chain.tvl / 1000000).toFixed(2)}M`
-                )
-                .join("\n- ");
+            const tvlInMillions = formattedData.totalDeposits * 1000000;
 
-            const arweaveData = await fetchArweaveData();
+            // Replace direct calls with cached versions
+            const [
+                arweaveStats,
+                similarChains,
+                arweaveData,
+                arweaveNetworkStatWholeArray,
+            ] = await Promise.all([
+                getCachedData("arweaveStats", getArweaveStats),
+                getCachedData("chainsTVL", () =>
+                    getChainsByTVLRange(
+                        tvlInMillions - 200000000,
+                        tvlInMillions + 200000000
+                    )
+                ),
+                getCachedData("arweaveData", fetchArweaveData),
+                getCachedData("networkStats", getNetworkStats),
+            ]);
 
-            const arweaveNetworkStatWholeArray = await getNetworkStats();
             const arweaveNetworkStat =
                 arweaveNetworkStatWholeArray[
                     arweaveNetworkStatWholeArray.length - 1
                 ];
-            console.log(arweaveNetworkStat);
             return `
 AO Network Stats:
 - Active Users: ${arweaveNetworkStat?.active_users.toLocaleString()}
@@ -278,7 +304,12 @@ Arweave Stats:
 AO TVL Comparison:
 - AO TVL: $${formattedData.totalDeposits}M
 - Competitors (Chains with similar TVL):
-- ${competitorInfo}
+- ${similarChains
+                .map(
+                    (chain) =>
+                        `${chain.name}: $${(chain.tvl / 1000000).toFixed(2)}M`
+                )
+                .join("\n- ")}
 `.trim();
         } catch (error) {
             console.error("Error fetching data:", error);
