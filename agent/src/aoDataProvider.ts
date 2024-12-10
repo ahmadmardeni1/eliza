@@ -1,5 +1,6 @@
 import { Provider, IAgentRuntime, Memory, State } from "@ai16z/eliza";
 import { DuneClient } from "@duneanalytics/client-sdk";
+import { Client, cacheExchange, fetchExchange, gql } from "urql";
 
 interface Chain {
     gecko_id: string;
@@ -9,7 +10,24 @@ interface Chain {
     name: string;
     chainId: number;
 }
+type NetworkStat = {
+    active_processes: number;
+    active_users: number;
+    created_date: string;
+    eval_count: number;
+    modules_rolling: number;
+    new_module_count: number;
+    new_process_count: number;
+    processes_rolling: number;
+    transfer_count: number;
+    tx_count: number;
+    tx_count_rolling: number;
+};
 
+const goldsky = new Client({
+    url: "https://arweave-search.goldsky.com/graphql",
+    exchanges: [cacheExchange, fetchExchange],
+});
 const CMC_API_KEY = process.env.CMC_API_KEY;
 
 async function fetchArweaveData() {
@@ -78,6 +96,73 @@ async function getChainsByTVLRange(
             .sort((a, b) => b.tvl - a.tvl); // Sort by TVL descending
     } catch (error) {
         console.error("Error fetching chains data:", error);
+        return [];
+    }
+}
+
+async function getNetworkStats(): Promise<[]> {
+    const messageFields = gql`
+        fragment MessageFields on TransactionConnection {
+            edges {
+                cursor
+                node {
+                    id
+                    ingested_at
+                    recipient
+                    block {
+                        timestamp
+                        height
+                    }
+                    tags {
+                        name
+                        value
+                    }
+                    data {
+                        size
+                    }
+                    owner {
+                        address
+                    }
+                }
+            }
+        }
+    `;
+    try {
+        const networkStatsQuery = gql`
+            query {
+                transactions(
+                    sort: HEIGHT_DESC
+                    first: 1
+                    owners: ["yqRGaljOLb2IvKkYVa87Wdcc8m_4w6FI58Gej05gorA"]
+                    recipients: ["vdpaKV_BQNISuDgtZpLDfDlMJinKHqM3d2NWd3bzeSk"]
+                    tags: [{ name: "Action", values: ["Update-Stats"] }]
+                ) {
+                    ...MessageFields
+                }
+            }
+
+            ${messageFields}
+        `;
+        const result = await goldsky.query(networkStatsQuery, {}).toPromise();
+        if (!result.data) return [];
+
+        const { edges } = result.data.transactions;
+        const updateId = edges[0]?.node.id;
+
+        const data = await fetch(`https://arweave.net/${updateId}`);
+        console.log("updateid", updateId);
+        const json = await data.json();
+
+        // Transform the data to rename 'tx_count_rolling' to 'messages'
+        const transformedData = json.map((item: any) => ({
+            ...item,
+            messages: item.tx_count_rolling,
+            tx_count_rolling: undefined, // Optionally remove the original property
+        }));
+
+        return transformedData;
+    } catch (error) {
+        console.error(error);
         return [];
     }
 }
@@ -151,7 +236,18 @@ const aoDataProvider: Provider = {
 
             const arweaveData = await fetchArweaveData();
 
+            const arweaveNetworkStatWholeArray = await getNetworkStats();
+            const arweaveNetworkStat =
+                arweaveNetworkStatWholeArray[
+                    arweaveNetworkStatWholeArray.length - 1
+                ];
+            console.log(arweaveNetworkStat);
             return `
+AO Network Stats:
+- Active Users: ${arweaveNetworkStat?.active_users.toLocaleString()}
+- Active Processes: ${arweaveNetworkStat?.active_processes.toLocaleString()}
+- Total Modules: ${arweaveNetworkStat?.modules_rolling.toLocaleString()}
+- Total Messages: ${(arweaveNetworkStat?.messages / 1000000).toFixed(2)}M
 
 AO Data Metrics:
 - Total Deposits: ${formattedData.totalDeposits} M$
