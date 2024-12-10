@@ -63,6 +63,11 @@ async function injectArweavePapers(runtime: IAgentRuntime) {
             roomId: documentsRoomId,
             content: {
                 text: whitePaperContent,
+                metadata: {
+                    source: "Arweave Yellowpaper",
+                    type: "technical_document",
+                    isGroundTruth: true, // Mark this as authoritative source
+                },
             },
         });
 
@@ -73,6 +78,11 @@ async function injectArweavePapers(runtime: IAgentRuntime) {
             roomId: documentsRoomId,
             content: {
                 text: yellowPaperContent,
+                metadata: {
+                    source: "Arweave Yellowpaper",
+                    type: "technical_document",
+                    isGroundTruth: true, // Mark this as authoritative source
+                },
             },
         });
 
