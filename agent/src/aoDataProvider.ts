@@ -218,9 +218,9 @@ export interface NetworkData {
         totalTransactions: number;
         activeAddresses: number;
         smartContracts: number;
-        networkSize: number;
-        proofRate: number;
-        storageCost: number;
+        networkSize: string;
+        proofRate: string;
+        storageCost: string;
         activeNodes: number;
     };
     competitors: Array<{
@@ -263,9 +263,9 @@ Arweave Stats:
 - Total Transactions: ${(networkData.arweave.totalTransactions / 1000000).toFixed(2)}M
 - Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
 - Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
-- Network Size: ${networkData.arweave?.networkSize.toFixed(2)} GB
-- Proof Rate: ${(networkData.arweave?.proofRate / 1000000).toFixed(2)}M
-- Storage Cost: ${(networkData.arweave?.storageCost / 1000000000).toFixed(2)}B
+- Network Size: ${networkData.arweave?.networkSize}
+- Proof Rate: ${networkData.arweave?.proofRate}
+- Storage Cost: ${networkData.arweave?.storageCost}
 - Active Nodes: ${networkData.arweave?.activeNodes}
 
 AO TVL Comparison:
@@ -415,9 +415,10 @@ export async function getNetworkData(): Promise<NetworkData> {
             totalTransactions: arweaveStats.txs,
             activeAddresses: arweaveStats.addresses,
             smartContracts: arweaveStats.contracts,
-            networkSize: arweaveStats.networkSize,
-            proofRate: arweaveStats.proofRate,
-            storageCost: arweaveStats.storageCost,
+            networkSize: arweaveStats.networkSize + "PiB",
+            proofRate: arweaveStats.proofRate + "P/s",
+            storageCost:
+                (arweaveStats.storageCost / 100000000000).toFixed(2) + "AR/GIB",
             activeNodes: arweaveStats.nodes,
         },
         competitors: similarChains.map((chain) => ({
