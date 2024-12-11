@@ -150,7 +150,6 @@ async function getNetworkStats(): Promise<[]> {
         const updateId = edges[0]?.node.id;
 
         const data = await fetch(`https://arweave.net/${updateId}`);
-        console.log("updateid", updateId);
         const json = await data.json();
 
         // Transform the data to rename 'tx_count_rolling' to 'messages'
@@ -190,126 +189,94 @@ function getCachedData<T>(key: string, fetchFn: () => Promise<T>): Promise<T> {
     });
 }
 
+export interface NetworkData {
+    ao: {
+        activeUsers: number;
+        activeProcesses: number;
+        totalModules: number;
+        totalMessages: number;
+        deposits: {
+            total: number;
+            dai: number;
+            stEth: number;
+        };
+        depositors: {
+            dai: number;
+            stEth: number;
+            total: number;
+        };
+        tvlInMillions: number;
+    };
+    arweave: {
+        price: number;
+        marketCap: number;
+        volume24h: number;
+        fullyDilutedValue: number;
+        circulatingSupply: number;
+        height: number;
+        tps: number;
+        totalTransactions: number;
+        activeAddresses: number;
+        smartContracts: number;
+        networkSize: number;
+        proofRate: number;
+        storageCost: number;
+        activeNodes: number;
+    };
+    competitors: Array<{
+        name: string;
+        tvl: number;
+    }>;
+}
+
 const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
-            const dune = new DuneClient(process.env.DUNE_API_KEY);
+            const networkData = await getNetworkData();
 
-            const QUERIES = {
-                TOTAL_DEPOSITS: 4028918,
-                TOTAL_DEPOSITORS: 4029003,
-                DAILY_METRICS: 3834081,
-            };
-
-            const results = {
-                totalDeposits: await fetchQueryResult(
-                    dune,
-                    QUERIES.TOTAL_DEPOSITS
-                ),
-                totalDepositors: await fetchQueryResult(
-                    dune,
-                    QUERIES.TOTAL_DEPOSITORS
-                ),
-                depositRatio: (await fetchQueryResult(dune, 4028682)).map(
-                    (row) => ({
-                        token: row.Token,
-                        accumulatedValue: row.AccumVal, // Convert to millions
-                    })
-                ),
-            };
-
-            const formattedData = {
-                timestamp: new Date().toISOString(),
-                totalDeposits: formatNumericValue(
-                    results.totalDeposits[0]?.Total_Value
-                ),
-                depositByToken: {
-                    dai: formatNumericValue(
-                        results.depositRatio.find((r) => r.token === "DAI")
-                            ?.accumulatedValue || 0
-                    ),
-                    stEth: formatNumericValue(
-                        results.depositRatio.find((r) => r.token === "stETH")
-                            ?.accumulatedValue || 0
-                    ),
-                },
-                totalDepositors: {
-                    dai: formatNumericValue(results.totalDepositors[0]?.No_DAI),
-                    stEth: formatNumericValue(
-                        results.totalDepositors[0]?.No_stETH
-                    ),
-                    total: formatNumericValue(
-                        results.totalDepositors[0]?.Total
-                    ),
-                },
-            };
-
-            const tvlInMillions = formattedData.totalDeposits * 1000000;
-
-            // Replace direct calls with cached versions
-            const [
-                arweaveStats,
-                similarChains,
-                arweaveData,
-                arweaveNetworkStatWholeArray,
-            ] = await Promise.all([
-                getCachedData("arweaveStats", getArweaveStats),
-                getCachedData("chainsTVL", () =>
-                    getChainsByTVLRange(
-                        tvlInMillions - 200000000,
-                        tvlInMillions + 200000000
-                    )
-                ),
-                getCachedData("arweaveData", fetchArweaveData),
-                getCachedData("networkStats", getNetworkStats),
-            ]);
-
-            const arweaveNetworkStat =
-                arweaveNetworkStatWholeArray[
-                    arweaveNetworkStatWholeArray.length - 1
-                ];
             return `
 AO Network Stats:
-- Active Users: ${arweaveNetworkStat?.active_users.toLocaleString()}
-- Active Processes: ${arweaveNetworkStat?.active_processes.toLocaleString()}
-- Total Modules: ${arweaveNetworkStat?.modules_rolling.toLocaleString()}
-- Total Messages: ${(arweaveNetworkStat?.messages / 1000000).toFixed(2)}M
+- Active Users: ${networkData.ao.activeUsers.toLocaleString()}
+
+- Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
+- Total Modules: ${networkData.ao.totalModules.toLocaleString()}
+- Total Messages: ${(networkData.ao.totalMessages / 1000000).toFixed(2)}M
 
 AO Data Metrics:
-- Total Deposits: ${formattedData.totalDeposits} M$
-- DAI Deposits: ${formattedData.depositByToken.dai} M$
-- stETH Deposits: ${formattedData.depositByToken.stEth} M$
-- DAI Depositors: ${formattedData.totalDepositors.dai}
-- stETH Depositors: ${formattedData.totalDepositors.stEth}
-- Total Depositors: ${formattedData.totalDepositors.total}
+- Total Deposits: ${networkData.ao.deposits.total} M$
+- DAI Deposits: ${networkData.ao.deposits.dai} M$
+- stETH Deposits: ${networkData.ao.deposits.stEth} M$
+- DAI Depositors: ${networkData.ao.depositors.dai}
+- stETH Depositors:  ${networkData.ao.depositors.stEth}
+- Total Depositors:  ${networkData.ao.depositors.total}
 
 Arweave Market Data:
-- Price (USD): $${arweaveData?.price?.toFixed(2) || "N/A"}
-- Market Cap: $${(arweaveData?.market_cap / 1000000).toFixed(2)}M
-- 24h Volume: $${(arweaveData?.volume_24h / 1000000).toFixed(2)}M
-- FDV: $${(arweaveData?.fully_diluted_market_cap / 1000000).toFixed(2)}M
-- Circulating Supply: ${Math.round(arweaveData?.circulating_supply || 0).toLocaleString()} AR
+- Price (USD): $${networkData.arweave?.price?.toFixed(2) || "N/A"}
+- Market Cap: $${(networkData?.arweave?.marketCap / 1000000).toFixed(2)}M
+- 24h Volume: $${(networkData.arweave?.volume24h / 1000000).toFixed(2)}M
+- FDV: $${(networkData.arweave?.fullyDilutedValue / 1000000).toFixed(2)}M
+- Circulating Supply: ${Math.round(networkData.arweave?.circulatingSupply || 0).toLocaleString()} AR
 
 Arweave Stats:
-- Height: ${arweaveStats.height}
-- TPS: ${arweaveStats.tps.toFixed(2)}
-- Total Transactions: ${(arweaveStats.txs / 1000000).toFixed(2)}M
-- Active Addresses: ${arweaveStats.addresses.toLocaleString()}
-- Smart Contracts: ${arweaveStats.contracts.toLocaleString()}
-- Network Size: ${arweaveStats.networkSize.toFixed(2)} GB
-- Proof Rate: ${(arweaveStats.proofRate / 1000000).toFixed(2)}M
-- Storage Cost: ${(arweaveStats.storageCost / 1000000000).toFixed(2)}B
-- Active Nodes: ${arweaveStats.nodes}
+- Height: ${networkData.arweave?.height}
+- TPS: ${networkData.arweave.tps.toFixed(2)}
+- Total Transactions: ${(networkData.arweave.totalTransactions / 1000000).toFixed(2)}M
+- Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
+- Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
+- Network Size: ${networkData.arweave?.networkSize.toFixed(2)} GB
+- Proof Rate: ${(networkData.arweave?.proofRate / 1000000).toFixed(2)}M
+- Storage Cost: ${(networkData.arweave?.storageCost / 1000000000).toFixed(2)}B
+- Active Nodes: ${networkData.arweave?.activeNodes}
 
 AO TVL Comparison:
-- AO TVL: $${formattedData.totalDeposits}M
+- AO TVL: $${networkData.ao.tvlInMillions}M
 - Competitors (Chains with similar TVL):
-- ${similarChains
+- ${networkData.competitors
                 .map(
                     (chain) =>
                         `${chain.name}: $${(chain.tvl / 1000000).toFixed(2)}M`
                 )
-                .join("\n- ")}
+                .join("\n-")}
 `.trim();
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -346,6 +313,119 @@ function formatDailyMetrics(metrics) {
             metrics.NetETHValAccumNetETHVal_
         ),
     };
+}
+async function getAoStats() {
+    const dune = new DuneClient(process.env.DUNE_API_KEY);
+
+    const QUERIES = {
+        TOTAL_DEPOSITS: 4028918,
+        TOTAL_DEPOSITORS: 4029003,
+        DAILY_METRICS: 3834081,
+    };
+
+    const results = {
+        totalDeposits: await fetchQueryResult(dune, QUERIES.TOTAL_DEPOSITS),
+        totalDepositors: await fetchQueryResult(dune, QUERIES.TOTAL_DEPOSITORS),
+        depositRatio: (await fetchQueryResult(dune, 4028682)).map((row) => ({
+            token: row.Token,
+            accumulatedValue: row.AccumVal, // Convert to millions
+        })),
+    };
+
+    const formattedData = {
+        timestamp: new Date().toISOString(),
+        totalDeposits: formatNumericValue(
+            results.totalDeposits[0]?.Total_Value
+        ),
+        depositByToken: {
+            dai: formatNumericValue(
+                results.depositRatio.find((r) => r.token === "DAI")
+                    ?.accumulatedValue || 0
+            ),
+            stEth: formatNumericValue(
+                results.depositRatio.find((r) => r.token === "stETH")
+                    ?.accumulatedValue || 0
+            ),
+        },
+        totalDepositors: {
+            dai: formatNumericValue(results.totalDepositors[0]?.No_DAI),
+            stEth: formatNumericValue(results.totalDepositors[0]?.No_stETH),
+            total: formatNumericValue(results.totalDepositors[0]?.Total),
+        },
+    };
+    return formattedData;
+}
+type arweaveNetworkStat = {
+    active_users: number;
+    active_processes: number;
+    modules_rolling: number;
+    messages: number;
+};
+export async function getNetworkData(): Promise<NetworkData> {
+    const getFormatedAOData = await getCachedData("aoStats", getAoStats);
+    const tvlInMillions = getFormatedAOData.totalDeposits * 1000000;
+    // Replace direct calls with cached versions
+
+    const [
+        arweaveStats,
+        similarChains,
+        arweaveData,
+        arweaveNetworkStatWholeArray,
+    ] = await Promise.all([
+        getCachedData("arweaveStats", getArweaveStats),
+        getCachedData("chainsTVL", () =>
+            getChainsByTVLRange(
+                tvlInMillions - 200000000,
+                tvlInMillions + 200000000
+            )
+        ),
+        getCachedData("arweaveData", fetchArweaveData),
+        getCachedData("networkStats", getNetworkStats),
+    ]);
+
+    const arweaveNetworkStat: arweaveNetworkStat =
+        arweaveNetworkStatWholeArray[arweaveNetworkStatWholeArray.length - 1];
+
+    const networkData: NetworkData = {
+        ao: {
+            activeUsers: arweaveNetworkStat?.active_users,
+            activeProcesses: arweaveNetworkStat?.active_processes,
+            totalModules: arweaveNetworkStat?.modules_rolling,
+            totalMessages: arweaveNetworkStat?.messages,
+            deposits: {
+                total: getFormatedAOData.totalDeposits,
+                dai: getFormatedAOData.depositByToken.dai,
+                stEth: getFormatedAOData.depositByToken.stEth,
+            },
+            depositors: {
+                dai: getFormatedAOData.totalDepositors.dai,
+                stEth: getFormatedAOData.totalDepositors.stEth,
+                total: getFormatedAOData.totalDepositors.total,
+            },
+            tvlInMillions: tvlInMillions,
+        },
+        arweave: {
+            price: arweaveData?.price,
+            marketCap: arweaveData?.market_cap,
+            volume24h: arweaveData?.volume_24h,
+            fullyDilutedValue: arweaveData?.fully_diluted_market_cap,
+            circulatingSupply: arweaveData?.circulating_supply,
+            height: arweaveStats.height,
+            tps: arweaveStats.tps,
+            totalTransactions: arweaveStats.txs,
+            activeAddresses: arweaveStats.addresses,
+            smartContracts: arweaveStats.contracts,
+            networkSize: arweaveStats.networkSize,
+            proofRate: arweaveStats.proofRate,
+            storageCost: arweaveStats.storageCost,
+            activeNodes: arweaveStats.nodes,
+        },
+        competitors: similarChains.map((chain) => ({
+            name: chain.name,
+            tvl: chain.tvl,
+        })),
+    };
+    return networkData;
 }
 
 export default aoDataProvider;
