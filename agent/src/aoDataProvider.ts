@@ -1,7 +1,7 @@
 import { Provider, IAgentRuntime, Memory, State } from "@ai16z/eliza";
 import { DuneClient } from "@duneanalytics/client-sdk";
 import { Client, cacheExchange, fetchExchange, gql } from "urql";
-
+import Humanize from "humanize-plus";
 interface Chain {
     gecko_id: string;
     tvl: number;
@@ -260,7 +260,7 @@ Arweave Market Data:
 Arweave Stats:
 - Height: ${networkData.arweave?.height}
 - TPS: ${networkData.arweave.tps.toFixed(2)}
-- Total Transactions: ${(networkData.arweave.totalTransactions / 1000000).toFixed(2)}M
+- Total Transactions: ${networkData.arweave.totalTransactions}
 - Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
 - Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
 - Network Size: ${networkData.arweave?.networkSize}
@@ -412,13 +412,13 @@ export async function getNetworkData(): Promise<NetworkData> {
             circulatingSupply: arweaveData?.circulating_supply,
             height: arweaveStats.height,
             tps: arweaveStats.tps,
-            totalTransactions: arweaveStats.txs,
+            totalTransactions: Humanize.formatNumber(arweaveStats.txs),
             activeAddresses: arweaveStats.addresses,
             smartContracts: arweaveStats.contracts,
             networkSize: arweaveStats.networkSize + "PiB",
             proofRate: arweaveStats.proofRate + "P/s",
             storageCost:
-                (arweaveStats.storageCost / 100000000000).toFixed(2) + "AR/GIB",
+                Humanize.formatNumber(arweaveStats.storageCost, 2) + "AR/GIB",
             activeNodes: arweaveStats.nodes,
         },
         competitors: similarChains.map((chain) => ({
