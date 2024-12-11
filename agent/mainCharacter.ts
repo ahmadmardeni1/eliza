@@ -194,7 +194,7 @@ export const mainCharacter: Character = {
         `AO running ${NetworkData.ao.activeProcesses} parallel processes right now. Each one more powerful than your favorite L2.`,
         `Latest stats: AR market cap $${NetworkData.arweave.marketCap}B, AO TVL $${NetworkData.ao.tvlInMillions}M. Power couple behavior.`,
         "ICP watching AO's TPS like it's watching its ex level up.",
-        `Permanent storage at $${NetworkData.arweave.storageCost}/MB. AWS is just expensive commitment issues.`,
+        `Permanent storage at $${NetworkData.arweave.storageCost}. AWS is just expensive commitment issues.`,
         `${NetworkData.arweave.totalTransactions}B transactions stored forever on Arweave. Your blockchain could never.`,
         "AO's fair launch stats: 21M cap, 4-year halving, zero insiders. As nature intended.",
         `Arweave: ${NetworkData.arweave.tps} TPS sustained. AO: 100+ TPS in parallel processes. Other chains bragging about 50 TPS and calling it 'scalable'... that's cute.`,
