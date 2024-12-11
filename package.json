@@ -61,6 +61,7 @@
         "amqplib": "0.10.5",
         "csv-parse": "5.6.0",
         "graphql-tag": "^2.12.6",
+        "humanize-plus": "^1.8.2",
         "ollama-ai-provider": "0.16.1",
         "optional": "0.1.4",
         "pnpm": "9.14.4",
