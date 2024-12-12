@@ -202,7 +202,6 @@ export type Models = {
     [ModelProviderName.HEURIST]: Model;
     [ModelProviderName.GALADRIEL]: Model;
     [ModelProviderName.FAL]: Model;
-    [ModelProviderName.GAIANET]: Model;
     [ModelProviderName.ALI_BAILIAN]: Model;
     [ModelProviderName.VOLENGINE]: Model;
     [ModelProviderName.NANOGPT]: Model;

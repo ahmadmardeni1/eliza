@@ -16,7 +16,8 @@ export const models: Models = {
             [ModelClass.SMALL]: settings.SMALL_OPENAI_MODEL || "gpt-4o-mini",
             [ModelClass.MEDIUM]: settings.MEDIUM_OPENAI_MODEL || "gpt-4o",
             [ModelClass.LARGE]: settings.LARGE_OPENAI_MODEL || "gpt-4o",
-            [ModelClass.EMBEDDING]: settings.EMBEDDING_OPENAI_MODEL || "text-embedding-3-small",
+            [ModelClass.EMBEDDING]:
+                settings.EMBEDDING_OPENAI_MODEL || "text-embedding-3-small",
             [ModelClass.IMAGE]: settings.IMAGE_OPENAI_MODEL || "dall-e-3",
         },
     },
@@ -55,9 +56,12 @@ export const models: Models = {
         },
         endpoint: "https://api.anthropic.com/v1",
         model: {
-            [ModelClass.SMALL]: settings.SMALL_ANTHROPIC_MODEL || "claude-3-haiku-20240307",
-            [ModelClass.MEDIUM]: settings.MEDIUM_ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
-            [ModelClass.LARGE]: settings.LARGE_ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+            [ModelClass.SMALL]:
+                settings.SMALL_ANTHROPIC_MODEL || "claude-3-haiku-20240307",
+            [ModelClass.MEDIUM]:
+                settings.MEDIUM_ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+            [ModelClass.LARGE]:
+                settings.LARGE_ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
         },
     },
     [ModelProviderName.CLAUDE_VERTEX]: {
@@ -90,7 +94,8 @@ export const models: Models = {
             [ModelClass.SMALL]: settings.SMALL_GROK_MODEL || "grok-2-1212",
             [ModelClass.MEDIUM]: settings.MEDIUM_GROK_MODEL || "grok-2-1212",
             [ModelClass.LARGE]: settings.LARGE_GROK_MODEL || "grok-2-1212",
-            [ModelClass.EMBEDDING]: settings.EMBEDDING_GROK_MODEL || "grok-2-1212", // not sure about this one
+            [ModelClass.EMBEDDING]:
+                settings.EMBEDDING_GROK_MODEL || "grok-2-1212", // not sure about this one
         },
     },
     [ModelProviderName.GROQ]: {
@@ -351,32 +356,6 @@ export const models: Models = {
             [ModelClass.IMAGE]: "fal-ai/flux-lora",
         },
     },
-    [ModelProviderName.GAIANET]: {
-        settings: {
-            stop: [],
-            maxInputTokens: 128000,
-            maxOutputTokens: 8192,
-            repetition_penalty: 0.4,
-            temperature: 0.7,
-        },
-        endpoint: settings.GAIANET_SERVER_URL,
-        model: {
-            [ModelClass.SMALL]:
-                settings.GAIANET_MODEL ||
-                settings.SMALL_GAIANET_MODEL ||
-                "llama3b",
-            [ModelClass.MEDIUM]:
-                settings.GAIANET_MODEL ||
-                settings.MEDIUM_GAIANET_MODEL ||
-                "llama",
-            [ModelClass.LARGE]:
-                settings.GAIANET_MODEL ||
-                settings.LARGE_GAIANET_MODEL ||
-                "qwen72b",
-            [ModelClass.EMBEDDING]:
-                settings.GAIANET_EMBEDDING_MODEL || "nomic-embed",
-        },
-    },
     [ModelProviderName.ALI_BAILIAN]: {
         endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1",
         settings: {
@@ -425,7 +404,7 @@ export const models: Models = {
             [ModelClass.SMALL]: settings.SMALL_NANOGPT_MODEL || "gpt-4o-mini",
             [ModelClass.MEDIUM]: settings.MEDIUM_NANOGPT_MODEL || "gpt-4o",
             [ModelClass.LARGE]: settings.LARGE_NANOGPT_MODEL || "gpt-4o",
-        }
+        },
     },
     [ModelProviderName.HYPERBOLIC]: {
         endpoint: "https://api.hyperbolic.xyz/v1",
@@ -461,7 +440,8 @@ export const models: Models = {
         },
         model: {
             [ModelClass.SMALL]: settings.SMALL_VENICE_MODEL || "llama-3.3-70b",
-            [ModelClass.MEDIUM]: settings.MEDIUM_VENICE_MODEL || "llama-3.3-70b",
+            [ModelClass.MEDIUM]:
+                settings.MEDIUM_VENICE_MODEL || "llama-3.3-70b",
             [ModelClass.LARGE]: settings.LARGE_VENICE_MODEL || "llama-3.1-405b",
             [ModelClass.IMAGE]: settings.IMAGE_VENICE_MODEL || "fluently-xl",
         },

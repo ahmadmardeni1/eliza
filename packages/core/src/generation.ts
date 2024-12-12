@@ -458,55 +458,6 @@ export async function generateText({
                 elizaLogger.debug("Received response from Heurist model.");
                 break;
             }
-            case ModelProviderName.GAIANET: {
-                elizaLogger.debug("Initializing GAIANET model.");
-
-                var baseURL = models[provider].endpoint;
-                if (!baseURL) {
-                    switch (modelClass) {
-                        case ModelClass.SMALL:
-                            baseURL =
-                                settings.SMALL_GAIANET_SERVER_URL ||
-                                "https://llama3b.gaia.domains/v1";
-                            break;
-                        case ModelClass.MEDIUM:
-                            baseURL =
-                                settings.MEDIUM_GAIANET_SERVER_URL ||
-                                "https://llama8b.gaia.domains/v1";
-                            break;
-                        case ModelClass.LARGE:
-                            baseURL =
-                                settings.LARGE_GAIANET_SERVER_URL ||
-                                "https://qwen72b.gaia.domains/v1";
-                            break;
-                    }
-                }
-
-                elizaLogger.debug("Using GAIANET model with baseURL:", baseURL);
-
-                const openai = createOpenAI({
-                    apiKey,
-                    baseURL: endpoint,
-                    fetch: runtime.fetch,
-                });
-
-                const { text: openaiResponse } = await aiGenerateText({
-                    model: openai.languageModel(model),
-                    prompt: context,
-                    system:
-                        runtime.character.system ??
-                        settings.SYSTEM_PROMPT ??
-                        undefined,
-                    temperature: temperature,
-                    maxTokens: max_response_length,
-                    frequencyPenalty: frequency_penalty,
-                    presencePenalty: presence_penalty,
-                });
-
-                response = openaiResponse;
-                elizaLogger.debug("Received response from GAIANET model.");
-                break;
-            }
 
             case ModelProviderName.GALADRIEL: {
                 elizaLogger.debug("Initializing Galadriel model.");
