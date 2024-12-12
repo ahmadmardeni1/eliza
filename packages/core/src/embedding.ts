@@ -21,8 +21,8 @@ export const getEmbeddingConfig = () => ({
             ? 1536 // OpenAI
             : settings.USE_OLLAMA_EMBEDDING?.toLowerCase() === "true"
               ? 1024 // Ollama mxbai-embed-large
-              :settings.USE_GAIANET_EMBEDDING?.toLowerCase() === "true"
-                ? 768 // GaiaNet
+              : settings.USE_GAIANET_EMBEDDING?.toLowerCase() === "true"
+                ? 1536 // GaiaNet
                 : 384, // BGE
     model:
         settings.USE_OPENAI_EMBEDDING?.toLowerCase() === "true"
@@ -191,20 +191,6 @@ export async function embed(runtime: IAgentRuntime, input: string) {
         });
     }
 
-    if (config.provider=="GaiaNet") {
-        return await getRemoteEmbedding(input, {
-            model: config.model,
-            endpoint:
-                runtime.character.modelEndpointOverride ||
-                models[ModelProviderName.GAIANET].endpoint ||
-                settings.SMALL_GAIANET_SERVER_URL ||
-                settings.MEDIUM_GAIANET_SERVER_URL ||
-                settings.LARGE_GAIANET_SERVER_URL,
-            apiKey: settings.GAIANET_API_KEY || runtime.token,
-            dimensions: config.dimensions,
-        });
-    }
-
     // BGE - try local first if in Node
     if (isNode) {
         try {
@@ -252,9 +238,11 @@ export async function embed(runtime: IAgentRuntime, input: string) {
                         return await import("fastembed");
                     } catch {
                         elizaLogger.error("Failed to load fastembed.");
-                        throw new Error("fastembed import failed, falling back to remote embedding");
+                        throw new Error(
+                            "fastembed import failed, falling back to remote embedding"
+                        );
                     }
-                })()
+                })(),
             ]);
 
             const [fs, { fileURLToPath }, fastEmbed] = moduleImports;
