@@ -1,6 +1,10 @@
 #!/bin/bash
 
+# Switch to branch 'add-ao-data'
 
+
+# Create and switch to a new branch 'add-ao-data'
+git checkout -b add-ao-data
 
 # Install NVM (Node Version Manager)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
@@ -12,8 +16,7 @@ export NVM_DIR="$HOME/.nvm"
 # Install Node.js version 23
 nvm install 23
 
-# Change directory to 'eliza'
-cd eliza || exit
+
 
 # Install pnpm globally
 npm install -g pnpm
