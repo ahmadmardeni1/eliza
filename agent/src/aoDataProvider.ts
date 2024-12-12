@@ -1,7 +1,7 @@
 import { Provider, IAgentRuntime, Memory, State } from "@ai16z/eliza";
 import { DuneClient } from "@duneanalytics/client-sdk";
 import { Client, cacheExchange, fetchExchange, gql } from "urql";
-import Humanize from "humanize-plus";
+
 interface Chain {
     gecko_id: string;
     tvl: number;
@@ -196,7 +196,7 @@ export interface NetworkData {
         activeUsers: number;
         activeProcesses: number;
         totalModules: number;
-        totalMessages: number;
+        totalMessages: string;
         deposits: {
             total: number;
             dai: number;
@@ -207,17 +207,17 @@ export interface NetworkData {
             stEth: number;
             total: number;
         };
-        tvlInMillions: number;
+        tvlInMillions: string;
     };
     arweave: {
-        price: number;
-        marketCap: number;
-        volume24h: number;
-        fullyDilutedValue: number;
-        circulatingSupply: number;
+        price: string;
+        marketCap: string;
+        volume24h: string;
+        fullyDilutedValue: string;
+        circulatingSupply: string;
         height: number;
         tps: number;
-        totalTransactions: number;
+        totalTransactions: string;
         activeAddresses: number;
         smartContracts: number;
         networkSize: string;
@@ -227,7 +227,7 @@ export interface NetworkData {
     };
     competitors: Array<{
         name: string;
-        tvl: number;
+        tvl: string;
     }>;
 }
 
@@ -235,7 +235,8 @@ const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
             const networkData = await getNetworkData();
-            return `AO Network Stats:
+
+            const returnMessage = `AO Network Stats:
     - Active Users: ${networkData.ao.activeUsers.toLocaleString()}
 
     - Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
@@ -243,9 +244,9 @@ const aoDataProvider: Provider = {
     - Total Messages: ${networkData.ao.totalMessages}
 
     AO Data Metrics:
-    - Total Deposits:$${networkData.ao.deposits.total} M
-    - DAI Deposits: $${networkData.ao.deposits.dai} M
-    - stETH Deposits: $${networkData.ao.deposits.stEth} M
+    - Total Deposits:$${networkData.ao.deposits.total}M
+    - DAI Deposits: $${networkData.ao.deposits.dai}M
+    - stETH Deposits: $${networkData.ao.deposits.stEth}M
     - DAI Depositors: ${networkData.ao.depositors.dai}
     - stETH Depositors:  ${networkData.ao.depositors.stEth}
     - Total Depositors:  ${networkData.ao.depositors.total}
@@ -274,6 +275,8 @@ const aoDataProvider: Provider = {
     - ${networkData.competitors
         .map((chain) => `${chain.name}: $${chain.tvl}`)
         .join("\n-")}`.trim();
+            console.log(returnMessage);
+            return returnMessage;
         } catch (error) {
             console.error("Error fetching data:", error);
             return "AO metrics temporarily unavailable";
@@ -382,15 +385,14 @@ export async function getNetworkData(): Promise<NetworkData> {
     const arweaveNetworkStat: arweaveNetworkStat =
         arweaveNetworkStatWholeArray[arweaveNetworkStatWholeArray.length - 1];
 
+    const formatter = Intl.NumberFormat("en", { notation: "compact" });
+
     const networkData: NetworkData = {
         ao: {
             activeUsers: arweaveNetworkStat?.active_users,
             activeProcesses: arweaveNetworkStat?.active_processes,
             totalModules: arweaveNetworkStat?.modules_rolling,
-            totalMessages: Humanize.compactInteger(
-                arweaveNetworkStat?.messages,
-                2
-            ),
+            totalMessages: formatter.format(arweaveNetworkStat?.messages),
             deposits: {
                 total: getFormatedAOData.totalDeposits,
                 dai: getFormatedAOData.depositByToken.dai,
@@ -401,26 +403,21 @@ export async function getNetworkData(): Promise<NetworkData> {
                 stEth: getFormatedAOData.totalDepositors.stEth,
                 total: getFormatedAOData.totalDepositors.total,
             },
-            tvlInMillions: Humanize.compactInteger(tvlInMillions, 2),
+            tvlInMillions: formatter.format(tvlInMillions),
         },
         arweave: {
             price: arweaveData?.price.toFixed(2),
-            marketCap: Humanize.compactInteger(
-                arweaveData?.market_cap.toFixed(2),
-                2
+            marketCap: formatter.format(arweaveData?.market_cap.toFixed(2)),
+            volume24h: formatter.format(arweaveData?.volume_24h),
+            fullyDilutedValue: formatter.format(
+                arweaveData?.fully_diluted_market_cap
             ),
-            volume24h: Humanize.compactInteger(arweaveData?.volume_24h, 2),
-            fullyDilutedValue: Humanize.compactInteger(
-                arweaveData?.fully_diluted_market_cap,
-                2
-            ),
-            circulatingSupply: Humanize.compactInteger(
-                arweaveData?.circulating_supply,
-                2
+            circulatingSupply: formatter.format(
+                arweaveData?.circulating_supply
             ),
             height: arweaveStats.height,
             tps: arweaveStats.tps.toFixed(2),
-            totalTransactions: Humanize.compactInteger(arweaveStats.txs, 2),
+            totalTransactions: formatter.format(arweaveStats.txs),
             activeAddresses: arweaveStats.addresses,
             smartContracts: arweaveStats.contracts,
             networkSize: arweaveStats.networkSize + "PiB",
@@ -432,7 +429,7 @@ export async function getNetworkData(): Promise<NetworkData> {
         },
         competitors: similarChains.map((chain) => ({
             name: chain.name,
-            tvl: Humanize.compactInteger(chain.tvl, 2),
+            tvl: formatter.format(chain.tvl),
         })),
     };
 
