@@ -44,7 +44,9 @@ import readline from "readline";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 
-import { mainCharacter } from '../mainCharacter.ts'
+import { mainCharacter } from "../mainCharacter.ts";
+import aoDataProvider from "./aoDataProvider";
+import { injectArweavePapers } from "./pdfReader.ts";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -395,7 +397,7 @@ export function createAgent(
             getSecret(character, "WALLET_SECRET_SALT") ? teePlugin : null,
             getSecret(character, "ALCHEMY_API_KEY") ? goatPlugin : null,
         ].filter(Boolean),
-        providers: [],
+        providers: [aoDataProvider],
         actions: [],
         services: [],
         managers: [],
@@ -441,7 +443,7 @@ async function startAgent(character: Character, directClient) {
         const clients = await initializeClients(character, runtime);
 
         directClient.registerAgent(runtime);
-
+        await injectArweavePapers(runtime);
         return clients;
     } catch (error) {
         elizaLogger.error(
