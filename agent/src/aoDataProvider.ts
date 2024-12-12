@@ -50,6 +50,8 @@ async function fetchArweaveData() {
         const data = responseData.data;
         const arweaveKey = Object.keys(data)[0];
         const arweaveInfo = data[arweaveKey];
+        arweaveInfo.quote.USD.circulating_supply =
+            arweaveInfo.circulating_supply;
         return arweaveInfo.quote.USD;
     } catch (error) {
         console.error("Error fetching Arweave data:", error);
@@ -233,51 +235,45 @@ const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
             const networkData = await getNetworkData();
+            return `AO Network Stats:
+    - Active Users: ${networkData.ao.activeUsers.toLocaleString()}
 
-            return `
-AO Network Stats:
-- Active Users: ${networkData.ao.activeUsers.toLocaleString()}
+    - Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
+    - Total Modules: ${networkData.ao.totalModules.toLocaleString()}
+    - Total Messages: ${networkData.ao.totalMessages}
 
-- Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
-- Total Modules: ${networkData.ao.totalModules.toLocaleString()}
-- Total Messages: ${(networkData.ao.totalMessages / 1000000).toFixed(2)}M
+    AO Data Metrics:
+    - Total Deposits:$${networkData.ao.deposits.total} M
+    - DAI Deposits: $${networkData.ao.deposits.dai} M
+    - stETH Deposits: $${networkData.ao.deposits.stEth} M
+    - DAI Depositors: ${networkData.ao.depositors.dai}
+    - stETH Depositors:  ${networkData.ao.depositors.stEth}
+    - Total Depositors:  ${networkData.ao.depositors.total}
 
-AO Data Metrics:
-- Total Deposits: ${networkData.ao.deposits.total} M$
-- DAI Deposits: ${networkData.ao.deposits.dai} M$
-- stETH Deposits: ${networkData.ao.deposits.stEth} M$
-- DAI Depositors: ${networkData.ao.depositors.dai}
-- stETH Depositors:  ${networkData.ao.depositors.stEth}
-- Total Depositors:  ${networkData.ao.depositors.total}
+    Arweave Market Data:
+    - Price (USD): $${networkData.arweave?.price || "N/A"}
+    - Market Cap: $${networkData?.arweave?.marketCap}
+    - 24h Volume: $${networkData.arweave?.volume24h}
+    - FDV: $${networkData.arweave?.fullyDilutedValue}
+    - Circulating Supply: ${networkData.arweave?.circulatingSupply} AR
 
-Arweave Market Data:
-- Price (USD): $${networkData.arweave?.price?.toFixed(2) || "N/A"}
-- Market Cap: $${(networkData?.arweave?.marketCap / 1000000).toFixed(2)}M
-- 24h Volume: $${(networkData.arweave?.volume24h / 1000000).toFixed(2)}M
-- FDV: $${(networkData.arweave?.fullyDilutedValue / 1000000).toFixed(2)}M
-- Circulating Supply: ${Math.round(networkData.arweave?.circulatingSupply || 0).toLocaleString()} AR
+    Arweave Stats:
+    - Height: ${networkData.arweave?.height}
+    - TPS: ${networkData.arweave.tps}
+    - Total Transactions: ${networkData.arweave.totalTransactions}
+    - Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
+    - Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
+    - Network Size: ${networkData.arweave?.networkSize}
+    - Proof Rate: ${networkData.arweave?.proofRate}
+    - Storage Cost: ${networkData.arweave?.storageCost}
+    - Active Nodes: ${networkData.arweave?.activeNodes}
 
-Arweave Stats:
-- Height: ${networkData.arweave?.height}
-- TPS: ${networkData.arweave.tps.toFixed(2)}
-- Total Transactions: ${networkData.arweave.totalTransactions}
-- Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
-- Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
-- Network Size: ${networkData.arweave?.networkSize}
-- Proof Rate: ${networkData.arweave?.proofRate}
-- Storage Cost: ${networkData.arweave?.storageCost}
-- Active Nodes: ${networkData.arweave?.activeNodes}
-
-AO TVL Comparison:
-- AO TVL: $${networkData.ao.tvlInMillions}M
-- Competitors (Chains with similar TVL):
-- ${networkData.competitors
-                .map(
-                    (chain) =>
-                        `${chain.name}: $${(chain.tvl / 1000000).toFixed(2)}M`
-                )
-                .join("\n-")}
-`.trim();
+    AO TVL Comparison:
+    - AO TVL: $${networkData.ao.tvlInMillions}M
+    - Competitors (Chains with similar TVL):
+    - ${networkData.competitors
+        .map((chain) => `${chain.name}: $${chain.tvl}`)
+        .join("\n-")}`.trim();
         } catch (error) {
             console.error("Error fetching data:", error);
             return "AO metrics temporarily unavailable";
@@ -391,7 +387,10 @@ export async function getNetworkData(): Promise<NetworkData> {
             activeUsers: arweaveNetworkStat?.active_users,
             activeProcesses: arweaveNetworkStat?.active_processes,
             totalModules: arweaveNetworkStat?.modules_rolling,
-            totalMessages: arweaveNetworkStat?.messages,
+            totalMessages: Humanize.compactInteger(
+                arweaveNetworkStat?.messages,
+                2
+            ),
             deposits: {
                 total: getFormatedAOData.totalDeposits,
                 dai: getFormatedAOData.depositByToken.dai,
@@ -402,30 +401,41 @@ export async function getNetworkData(): Promise<NetworkData> {
                 stEth: getFormatedAOData.totalDepositors.stEth,
                 total: getFormatedAOData.totalDepositors.total,
             },
-            tvlInMillions: tvlInMillions,
+            tvlInMillions: Humanize.compactInteger(tvlInMillions, 2),
         },
         arweave: {
-            price: arweaveData?.price,
-            marketCap: arweaveData?.market_cap,
-            volume24h: arweaveData?.volume_24h,
-            fullyDilutedValue: arweaveData?.fully_diluted_market_cap,
-            circulatingSupply: arweaveData?.circulating_supply,
+            price: arweaveData?.price.toFixed(2),
+            marketCap: Humanize.compactInteger(
+                arweaveData?.market_cap.toFixed(2),
+                2
+            ),
+            volume24h: Humanize.compactInteger(arweaveData?.volume_24h, 2),
+            fullyDilutedValue: Humanize.compactInteger(
+                arweaveData?.fully_diluted_market_cap,
+                2
+            ),
+            circulatingSupply: Humanize.compactInteger(
+                arweaveData?.circulating_supply,
+                2
+            ),
             height: arweaveStats.height,
-            tps: arweaveStats.tps,
-            totalTransactions: Humanize.formatNumber(arweaveStats.txs),
+            tps: arweaveStats.tps.toFixed(2),
+            totalTransactions: Humanize.compactInteger(arweaveStats.txs, 2),
             activeAddresses: arweaveStats.addresses,
             smartContracts: arweaveStats.contracts,
             networkSize: arweaveStats.networkSize + "PiB",
-            proofRate: arweaveStats.proofRate + "P/s",
+            proofRate: arweaveStats.proofRate + " P/s",
             storageCost:
-                Humanize.formatNumber(arweaveStats.storageCost, 2) + "AR/GIB",
+                (arweaveStats.storageCost / 1000000000000).toFixed(2) +
+                "AR/GIB",
             activeNodes: arweaveStats.nodes,
         },
         competitors: similarChains.map((chain) => ({
             name: chain.name,
-            tvl: chain.tvl,
+            tvl: Humanize.compactInteger(chain.tvl, 2),
         })),
     };
+
     return networkData;
 }
 
