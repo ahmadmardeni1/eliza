@@ -235,7 +235,6 @@ const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
             const networkData = await getNetworkData();
-
             const returnMessage = `AO Network Stats:
     - Active Users: ${networkData.ao.activeUsers.toLocaleString()}
 
@@ -275,7 +274,6 @@ const aoDataProvider: Provider = {
     - ${networkData.competitors
         .map((chain) => `${chain.name}: $${chain.tvl}`)
         .join("\n-")}`.trim();
-            console.log(returnMessage);
             return returnMessage;
         } catch (error) {
             console.error("Error fetching data:", error);
