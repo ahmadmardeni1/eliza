@@ -235,45 +235,46 @@ const aoDataProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         try {
             const networkData = await getNetworkData();
-            const returnMessage = `AO Network Stats:
-    - Active Users: ${networkData.ao.activeUsers.toLocaleString()}
+            const returnMessage =
+                `AO Network Stats(Note: Values should not be rounded):
+        - Active Users: ${networkData.ao.activeUsers.toLocaleString()}
 
-    - Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
-    - Total Modules: ${networkData.ao.totalModules.toLocaleString()}
-    - Total Messages: ${networkData.ao.totalMessages}
+        - Active Processes: ${networkData.ao.activeProcesses.toLocaleString()}
+        - Total Modules: ${networkData.ao.totalModules.toLocaleString()}
+        - Total Messages: ${networkData.ao.totalMessages}
 
-    AO Data Metrics:
-    - Total Deposits:$${networkData.ao.deposits.total}M
-    - DAI Deposits: $${networkData.ao.deposits.dai}M
-    - stETH Deposits: $${networkData.ao.deposits.stEth}M
-    - DAI Depositors: ${networkData.ao.depositors.dai}
-    - stETH Depositors:  ${networkData.ao.depositors.stEth}
-    - Total Depositors:  ${networkData.ao.depositors.total}
+        AO Data Metrics:
+        - Total Deposits:$${networkData.ao.deposits.total}M
+        - DAI Deposits: $${networkData.ao.deposits.dai}M
+        - stETH Deposits: $${networkData.ao.deposits.stEth}M
+        - DAI Depositors: ${networkData.ao.depositors.dai}
+        - stETH Depositors:  ${networkData.ao.depositors.stEth}
+        - Total Depositors:  ${networkData.ao.depositors.total}
 
-    Arweave Market Data:
-    - Price (USD): $${networkData.arweave?.price || "N/A"}
-    - Market Cap: $${networkData?.arweave?.marketCap}
-    - 24h Volume: $${networkData.arweave?.volume24h}
-    - FDV: $${networkData.arweave?.fullyDilutedValue}
-    - Circulating Supply: ${networkData.arweave?.circulatingSupply} AR
+        Arweave Market Data:
+        - Price (USD): $${networkData.arweave?.price || "N/A"}
+        - Market Cap: $${networkData?.arweave?.marketCap}
+        - 24h Volume: $${networkData.arweave?.volume24h}
+        - FDV: $${networkData.arweave?.fullyDilutedValue}
+        - Circulating Supply: ${networkData.arweave?.circulatingSupply} AR
 
-    Arweave Stats:
-    - Height: ${networkData.arweave?.height}
-    - TPS: ${networkData.arweave.tps}
-    - Total Transactions: ${networkData.arweave.totalTransactions}
-    - Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
-    - Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
-    - Network Size: ${networkData.arweave?.networkSize}
-    - Proof Rate: ${networkData.arweave?.proofRate}
-    - Storage Cost: ${networkData.arweave?.storageCost}
-    - Active Nodes: ${networkData.arweave?.activeNodes}
+        Arweave Stats:
+        - Height: ${networkData.arweave?.height}
+        - TPS: ${networkData.arweave.tps}
+        - Total Transactions: ${networkData.arweave.totalTransactions}
+        - Active Addresses: ${networkData.arweave.activeAddresses.toLocaleString()}
+        - Smart Contracts: ${networkData.arweave.smartContracts.toLocaleString()}
+        - Network Size: ${networkData.arweave?.networkSize}
+        - Proof Rate: ${networkData.arweave?.proofRate}
+        - Storage Cost: ${networkData.arweave?.storageCost}
+        - Active Nodes: ${networkData.arweave?.activeNodes}
 
-    AO TVL Comparison:
-    - AO TVL: $${networkData.ao.tvlInMillions}M
-    - Competitors (Chains with similar TVL):
-    - ${networkData.competitors
-        .map((chain) => `${chain.name}: $${chain.tvl}`)
-        .join("\n-")}`.trim();
+        AO TVL Comparison:
+        - AO TVL: $${networkData.ao.tvlInMillions}M
+        - Competitors (Chains with similar TVL):
+        - ${networkData.competitors
+            .map((chain) => `${chain.name}: $${chain.tvl}`)
+            .join("\n-")}`.trim();
             return returnMessage;
         } catch (error) {
             console.error("Error fetching data:", error);
