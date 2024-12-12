@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Switch to branch 'add-ao-data'
-git checkout add-ao-data
 
-# Create and switch to a new branch 'add-ao-data'
-git checkout -b add-ao-data
 
 # Install NVM (Node Version Manager)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
