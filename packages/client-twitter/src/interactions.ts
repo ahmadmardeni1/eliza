@@ -53,22 +53,23 @@ Thread of Tweets You Are Replying To:
 ` + messageCompletionFooter;
 
 export const twitterShouldRespondTemplate =
-    `# INSTRUCTIONS: Determine if {{agentName}} (@{{twitterUserName}}) should respond to the message and participate in the conversation. Do not comment. Just respond with "true" or "false".
+    `# INSTRUCTIONS: Determine if {{agentName}} (@{{twitterUserName}}) should respond to the message and participate in the conversation.
 
-Response options are RESPOND, IGNORE and STOP .
+Response options are RESPOND, IGNORE and STOP.
 
-{{agentName}} should respond to messages that are directed at them, or participate in conversations that are interesting or relevant to their background, IGNORE messages that are irrelevant to them, and should STOP if the conversation is concluded.
-
-{{agentName}} is in a room with other users and wants to be conversational, but not annoying.
-{{agentName}} should RESPOND to messages that are directed at them, or participate in conversations that are interesting or relevant to their background.
-If a message is not interesting or relevant, {{agentName}} should IGNORE.
-Unless directly RESPONDing to a user, {{agentName}} should IGNORE messages that are very short or do not contain much information.
-If a user asks {{agentName}} to stop talking, {{agentName}} should STOP.
-If {{agentName}} concludes a conversation and isn't part of the conversation anymore, {{agentName}} should STOP.
+IMPORTANT RULES:
+1. ALWAYS RESPOND if the message is from @{{targetUsername}}
+2. For all other users:
+   - RESPOND to messages directed at {{agentName}}
+   - RESPOND to conversations relevant to their background
+   - IGNORE messages that are irrelevant
+   - IGNORE very short messages without much information (unless directly addressed)
+   - STOP if asked to stop talking
+   - STOP if the conversation is concluded
 
 {{recentPosts}}
 
-IMPORTANT: {{agentName}} (aka @{{twitterUserName}}) is particularly sensitive about being annoying, so if there is any doubt, it is better to IGNORE than to RESPOND.
+IMPORTANT: For non-@{{targetUsername}} users, {{agentName}} should err on the side of IGNORE to avoid being annoying.
 
 {{currentPost}}
 
@@ -105,18 +106,39 @@ export class TwitterInteractionClient {
         elizaLogger.log("Checking Twitter interactions");
 
         const twitterUsername = this.client.profile.username;
-        try {
-            // Check for mentions
-            const tweetCandidates = (
-                await this.client.fetchSearchTweets(
-                    `@${twitterUsername}`,
-                    20,
-                    SearchMode.Latest
-                )
-            ).tweets;
+        const targetUsername = this.runtime.getSetting(
+            "TWITTER_TARGET_USERNAME"
+        );
 
+        try {
+            const oneDay = 24 * 60 * 60 * 1000;
+            const twoDaysAgo = new Date(Date.now() - 2 * oneDay)
+                .toISOString()
+                .split("T")[0];
+            const query = `from:${targetUsername} since:${twoDaysAgo}-filter:nativeretweets`;
+            // Fetch both mentions and target user's tweets
+
+            const mentionsResults = await this.client.fetchSearchTweets(
+                `@${twitterUsername}`,
+                20,
+                SearchMode.Latest
+            );
+
+            const targetUserResults = targetUsername
+                ? await this.client.fetchSearchTweets(
+                      query,
+                      20,
+                      SearchMode.Latest
+                  )
+                : { tweets: [] };
+
+            // Combine and deduplicate tweets
+            const allTweets = [
+                ...mentionsResults.tweets,
+                ...targetUserResults.tweets.filter((tweet) => !tweet.isReply),
+            ];
             // de-duplicate tweetCandidates with a set
-            const uniqueTweetCandidates = [...new Set(tweetCandidates)];
+            const uniqueTweetCandidates = [...new Set(allTweets)];
             // Sort tweet candidates by ID in ascending order
             uniqueTweetCandidates
                 .sort((a, b) => a.id.localeCompare(b.id))
@@ -141,7 +163,7 @@ export class TwitterInteractionClient {
 
                     if (existingResponse) {
                         elizaLogger.log(
-                            `Already responded to tweet ${tweet.id}, skipping`
+                            `Already responded to tweet ${tweet.id}, skipping ${tweetId}`
                         );
                         continue;
                     }
@@ -296,7 +318,7 @@ export class TwitterInteractionClient {
 
         // Promise<"RESPOND" | "IGNORE" | "STOP" | null> {
         if (shouldRespond !== "RESPOND") {
-            elizaLogger.log("Not responding to message");
+            elizaLogger.log("Not responding to message", shouldRespond);
             return { text: "Response Decision:", action: shouldRespond };
         }
 
