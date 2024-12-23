@@ -106,36 +106,42 @@ export class TwitterInteractionClient {
         elizaLogger.log("Checking Twitter interactions");
 
         const twitterUsername = this.client.profile.username;
-        const targetUsername = this.runtime.getSetting(
-            "TWITTER_TARGET_USERNAME"
-        );
+        const targetUsernames =
+            this.runtime
+                .getSetting("TWITTER_TARGET_USERNAME")
+                ?.split(",")
+                .map((u) => u.trim()) || [];
 
         try {
             const oneDay = 24 * 60 * 60 * 1000;
             const twoDaysAgo = new Date(Date.now() - 2 * oneDay)
                 .toISOString()
                 .split("T")[0];
-            const query = `from:${targetUsername} since:${twoDaysAgo}-filter:nativeretweets`;
-            // Fetch both mentions and target user's tweets
 
+            // Fetch mentions
             const mentionsResults = await this.client.fetchSearchTweets(
                 `@${twitterUsername}`,
                 20,
                 SearchMode.Latest
             );
 
-            const targetUserResults = targetUsername
-                ? await this.client.fetchSearchTweets(
-                      query,
-                      20,
-                      SearchMode.Latest
-                  )
-                : { tweets: [] };
+            // Fetch tweets from all target users
+            const targetUserTweets = [];
+            for (const username of targetUsernames) {
+                const query = `from:${username} since:${twoDaysAgo}-filter:nativeretweets`;
+                const results = await this.client.fetchSearchTweets(
+                    query,
+                    20,
+                    SearchMode.Latest
+                );
+                targetUserTweets.push(
+                    ...results.tweets.filter((tweet) => !tweet.isReply)
+                );
+            }
+
             // Combine and deduplicate tweets
-            const allTweets = [
-                ...mentionsResults.tweets,
-                ...targetUserResults.tweets.filter((tweet) => !tweet.isReply),
-            ];
+            const allTweets = [...mentionsResults.tweets, ...targetUserTweets];
+
             // de-duplicate tweetCandidates with a set
             const uniqueTweetCandidates = [...new Set(allTweets)];
             // Sort tweet candidates by ID in ascending order
