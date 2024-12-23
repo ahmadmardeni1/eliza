@@ -681,10 +681,8 @@ async function startAgent(
 
         // report to console
         elizaLogger.debug(`Started ${character.name} as ${runtime.agentId}`);
-
-        return runtime;
         await injectArweavePapers(runtime);
-        return clients;
+        return runtime;
     } catch (error) {
         elizaLogger.error(
             `Error starting agent for character ${character.name}:`,

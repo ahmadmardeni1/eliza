@@ -431,7 +431,6 @@ export async function getNetworkData(): Promise<NetworkData> {
             tvl: formatter.format(chain.tvl),
         })),
     };
-
     return networkData;
 }
 
