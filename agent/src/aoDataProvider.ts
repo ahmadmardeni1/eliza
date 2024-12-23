@@ -174,7 +174,7 @@ interface CacheEntry<T> {
     timestamp: number;
 }
 
-const CACHE_DURATION = 30 * 1000; // 30 minutes in milliseconds
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 const cache: Record<string, CacheEntry<any>> = {};
 
 function getCachedData<T>(key: string, fetchFn: () => Promise<T>): Promise<T> {
