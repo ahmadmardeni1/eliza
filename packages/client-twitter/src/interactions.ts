@@ -18,6 +18,23 @@ import {
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const targetUsersStr =
+    process.env.TWITTER_TARGET_USERNAME ?? "aswanth_256,mardeni01,noenv";
+console.log(targetUsersStr, "target");
+// 2. Process the string to get valid usernames
+const validTargetUsersStr =
+    targetUsersStr && targetUsersStr.trim()
+        ? targetUsersStr
+              .split(",") // Split by commas: "user1,user2" -> ["user1", "user2"]
+              .map((u) => u.trim()) // Remove whitespace: [" user1 ", "user2 "] -> ["user1", "user2"]
+              .filter((u) => u.length > 0)
+              .join(",")
+        : "";
+
 export const twitterMessageHandlerTemplate =
     `
 # Areas of Expertise
@@ -59,7 +76,11 @@ export const twitterShouldRespondTemplate =
 Response options are RESPOND, IGNORE and STOP.
 
 IMPORTANT RULES:
-1. ALWAYS RESPOND if the message is from @{{targetUsername}}
+1. ALWAYS RESPOND if the message is from any of these users: @{{targetUsername}}${
+        validTargetUsersStr
+            ? `, @${validTargetUsersStr.replace(/,/g, ", @")}`
+            : ""
+    }
 2. For all other users:
    - RESPOND to messages directed at {{agentName}}
    - RESPOND to conversations relevant to their background
@@ -70,7 +91,7 @@ IMPORTANT RULES:
 
 {{recentPosts}}
 
-IMPORTANT: For non-@{{targetUsername}} users, {{agentName}} should err on the side of IGNORE to avoid being annoying.
+IMPORTANT: For users not in the whitelist above, {{agentName}} should err on the side of IGNORE to avoid being annoying.
 
 {{currentPost}}
 
@@ -105,7 +126,6 @@ export class TwitterInteractionClient {
     async handleTwitterInteractions() {
         elizaLogger.log("Checking Twitter interactions");
         // Read from environment variable, fallback to default list if not set
-        const targetUsersStr = this.runtime.getSetting("TWITTER_TARGET_USERS");
 
         const twitterUsername = this.client.profile.username;
         const targetUsernames =
@@ -146,11 +166,12 @@ export class TwitterInteractionClient {
 
             // de-duplicate tweetCandidates with a set
             const uniqueTweetCandidates = [...new Set(allTweets)];
+
             // Sort tweet candidates by ID in ascending order
             uniqueTweetCandidates
                 .sort((a, b) => a.id.localeCompare(b.id))
                 .filter((tweet) => tweet.userId !== this.client.profile.id);
-
+            console.log(uniqueTweetCandidates);
             // for each tweet candidate, handle the tweet
             for (const tweet of uniqueTweetCandidates) {
                 if (
@@ -221,6 +242,7 @@ export class TwitterInteractionClient {
 
             elizaLogger.log("Finished checking Twitter interactions");
         } catch (error) {
+            console.log(error);
             elizaLogger.error("Error handling Twitter interactions:", error);
         }
     }
@@ -309,17 +331,6 @@ export class TwitterInteractionClient {
         }
 
         // 1. Get the raw target users string from settings
-        const targetUsersStr = this.runtime.getSetting("TWITTER_TARGET_USERS");
-
-        // 2. Process the string to get valid usernames
-        const validTargetUsersStr =
-            targetUsersStr && targetUsersStr.trim()
-                ? targetUsersStr
-                      .split(",") // Split by commas: "user1,user2" -> ["user1", "user2"]
-                      .map((u) => u.trim()) // Remove whitespace: [" user1 ", "user2 "] -> ["user1", "user2"]
-                      .filter((u) => u.length > 0)
-                      .join(",")
-                : "";
 
         const shouldRespondContext = composeContext({
             state,
@@ -327,7 +338,7 @@ export class TwitterInteractionClient {
                 this.runtime.character.templates
                     ?.twitterShouldRespondTemplate ||
                 this.runtime.character?.templates?.shouldRespondTemplate ||
-                twitterShouldRespondTemplate(validTargetUsersStr),
+                twitterShouldRespondTemplate,
         });
 
         const shouldRespond = await generateShouldRespond({
