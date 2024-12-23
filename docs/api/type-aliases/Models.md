@@ -72,10 +72,6 @@ Model configurations by provider
 
 > **falai**: [`Model`](Model.md)
 
-### gaianet
-
-> **gaianet**: [`Model`](Model.md)
-
 ### ali\_bailian
 
 > **ali\_bailian**: [`Model`](Model.md)
@@ -86,4 +82,4 @@ Model configurations by provider
 
 ## Defined in
 
-[packages/core/src/types.ts:188](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L188)
+packages/core/src/types.ts:188

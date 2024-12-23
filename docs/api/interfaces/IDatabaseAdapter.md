@@ -14,7 +14,7 @@ Database instance
 
 #### Defined in
 
-[packages/core/src/types.ts:740](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L740)
+packages/core/src/types.ts:739
 
 ## Methods
 
@@ -30,7 +30,7 @@ Optional initialization
 
 #### Defined in
 
-[packages/core/src/types.ts:743](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L743)
+packages/core/src/types.ts:742
 
 ***
 
@@ -46,7 +46,7 @@ Close database connection
 
 #### Defined in
 
-[packages/core/src/types.ts:746](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L746)
+packages/core/src/types.ts:745
 
 ***
 
@@ -66,7 +66,7 @@ Get account by ID
 
 #### Defined in
 
-[packages/core/src/types.ts:749](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L749)
+packages/core/src/types.ts:748
 
 ***
 
@@ -86,7 +86,7 @@ Create new account
 
 #### Defined in
 
-[packages/core/src/types.ts:752](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L752)
+packages/core/src/types.ts:751
 
 ***
 
@@ -120,7 +120,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:755](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L755)
+packages/core/src/types.ts:754
 
 ***
 
@@ -138,7 +138,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:765](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L765)
+packages/core/src/types.ts:764
 
 ***
 
@@ -162,7 +162,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:767](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L767)
+packages/core/src/types.ts:766
 
 ***
 
@@ -192,7 +192,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:773](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L773)
+packages/core/src/types.ts:772
 
 ***
 
@@ -218,7 +218,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:782](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L782)
+packages/core/src/types.ts:781
 
 ***
 
@@ -238,7 +238,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:789](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L789)
+packages/core/src/types.ts:788
 
 ***
 
@@ -270,7 +270,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:791](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L791)
+packages/core/src/types.ts:790
 
 ***
 
@@ -292,7 +292,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:801](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L801)
+packages/core/src/types.ts:800
 
 ***
 
@@ -324,7 +324,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:806](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L806)
+packages/core/src/types.ts:805
 
 ***
 
@@ -346,7 +346,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:818](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L818)
+packages/core/src/types.ts:817
 
 ***
 
@@ -366,7 +366,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:824](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L824)
+packages/core/src/types.ts:823
 
 ***
 
@@ -386,7 +386,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:826](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L826)
+packages/core/src/types.ts:825
 
 ***
 
@@ -408,7 +408,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:828](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L828)
+packages/core/src/types.ts:827
 
 ***
 
@@ -436,7 +436,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:834](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L834)
+packages/core/src/types.ts:833
 
 ***
 
@@ -454,7 +454,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:842](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L842)
+packages/core/src/types.ts:841
 
 ***
 
@@ -472,7 +472,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:844](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L844)
+packages/core/src/types.ts:843
 
 ***
 
@@ -490,7 +490,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:846](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L846)
+packages/core/src/types.ts:845
 
 ***
 
@@ -508,7 +508,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:848](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L848)
+packages/core/src/types.ts:847
 
 ***
 
@@ -526,7 +526,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:850](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L850)
+packages/core/src/types.ts:849
 
 ***
 
@@ -544,7 +544,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:852](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L852)
+packages/core/src/types.ts:851
 
 ***
 
@@ -562,7 +562,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:854](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L854)
+packages/core/src/types.ts:853
 
 ***
 
@@ -580,7 +580,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:856](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L856)
+packages/core/src/types.ts:855
 
 ***
 
@@ -598,7 +598,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:858](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L858)
+packages/core/src/types.ts:857
 
 ***
 
@@ -618,7 +618,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:860](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L860)
+packages/core/src/types.ts:859
 
 ***
 
@@ -638,7 +638,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:862](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L862)
+packages/core/src/types.ts:861
 
 ***
 
@@ -656,7 +656,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:864](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L864)
+packages/core/src/types.ts:863
 
 ***
 
@@ -674,7 +674,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:866](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L866)
+packages/core/src/types.ts:865
 
 ***
 
@@ -694,7 +694,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:868](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L868)
+packages/core/src/types.ts:867
 
 ***
 
@@ -716,7 +716,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:873](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L873)
+packages/core/src/types.ts:872
 
 ***
 
@@ -738,7 +738,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:879](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L879)
+packages/core/src/types.ts:878
 
 ***
 
@@ -760,7 +760,7 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:881](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L881)
+packages/core/src/types.ts:880
 
 ***
 
@@ -780,4 +780,4 @@ Get memories matching criteria
 
 #### Defined in
 
-[packages/core/src/types.ts:886](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L886)
+packages/core/src/types.ts:885

@@ -18,4 +18,4 @@ Object containing environment variables
 
 ## Defined in
 
-[packages/core/src/settings.ts:69](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/settings.ts#L69)
+packages/core/src/settings.ts:69

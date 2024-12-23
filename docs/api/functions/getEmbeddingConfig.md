@@ -24,4 +24,4 @@ Add the embedding configuration
 
 ## Defined in
 
-[packages/core/src/embedding.ts:18](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/embedding.ts#L18)
+packages/core/src/embedding.ts:18

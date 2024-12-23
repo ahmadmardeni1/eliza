@@ -131,7 +131,6 @@ export class TwitterInteractionClient {
                       SearchMode.Latest
                   )
                 : { tweets: [] };
-
             // Combine and deduplicate tweets
             const allTweets = [
                 ...mentionsResults.tweets,

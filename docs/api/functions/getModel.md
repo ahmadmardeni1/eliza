@@ -2,7 +2,7 @@
 
 # Function: getModel()
 
-> **getModel**(`provider`, `type`): `string`
+> **getModel**(`provider`, `type`): `any`
 
 ## Parameters
 
@@ -12,8 +12,8 @@
 
 ## Returns
 
-`string`
+`any`
 
 ## Defined in
 
-[packages/core/src/models.ts:381](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/models.ts#L381)
+packages/core/src/models.ts:364

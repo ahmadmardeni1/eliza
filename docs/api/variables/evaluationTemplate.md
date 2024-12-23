@@ -8,4 +8,4 @@ Template used for the evaluation generateText.
 
 ## Defined in
 
-[packages/core/src/evaluators.ts:8](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/evaluators.ts#L8)
+packages/core/src/evaluators.ts:8

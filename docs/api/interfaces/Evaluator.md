@@ -14,7 +14,7 @@ Whether to always run
 
 #### Defined in
 
-[packages/core/src/types.ts:433](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L433)
+packages/core/src/types.ts:432
 
 ***
 
@@ -26,7 +26,7 @@ Detailed description
 
 #### Defined in
 
-[packages/core/src/types.ts:436](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L436)
+packages/core/src/types.ts:435
 
 ***
 
@@ -38,7 +38,7 @@ Similar evaluator descriptions
 
 #### Defined in
 
-[packages/core/src/types.ts:439](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L439)
+packages/core/src/types.ts:438
 
 ***
 
@@ -50,7 +50,7 @@ Example evaluations
 
 #### Defined in
 
-[packages/core/src/types.ts:442](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L442)
+packages/core/src/types.ts:441
 
 ***
 
@@ -62,7 +62,7 @@ Handler function
 
 #### Defined in
 
-[packages/core/src/types.ts:445](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L445)
+packages/core/src/types.ts:444
 
 ***
 
@@ -74,7 +74,7 @@ Evaluator name
 
 #### Defined in
 
-[packages/core/src/types.ts:448](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L448)
+packages/core/src/types.ts:447
 
 ***
 
@@ -86,4 +86,4 @@ Validation function
 
 #### Defined in
 
-[packages/core/src/types.ts:451](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L451)
+packages/core/src/types.ts:450

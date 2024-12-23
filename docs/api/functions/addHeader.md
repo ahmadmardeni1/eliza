@@ -39,4 +39,4 @@ const text = addHeader(header, body);
 
 ## Defined in
 
-[packages/core/src/context.ts:58](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/context.ts#L58)
+packages/core/src/context.ts:58

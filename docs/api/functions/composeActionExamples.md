@@ -25,4 +25,4 @@ A string containing formatted examples of conversations.
 
 ## Defined in
 
-[packages/core/src/actions.ts:11](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/actions.ts#L11)
+packages/core/src/actions.ts:11

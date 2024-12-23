@@ -52,4 +52,4 @@ Optional clients
 
 ## Defined in
 
-[packages/core/src/types.ts:574](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L574)
+packages/core/src/types.ts:573

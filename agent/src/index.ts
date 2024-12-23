@@ -5,6 +5,7 @@ import { DirectClientInterface } from "@ai16z/client-direct";
 import { DiscordClientInterface } from "@ai16z/client-discord";
 import { TelegramClientInterface } from "@ai16z/client-telegram";
 import { TwitterClientInterface } from "@ai16z/client-twitter";
+
 import {
     AgentRuntime,
     CacheManager,
@@ -458,12 +459,71 @@ async function startAgent(character: Character, directClient) {
     }
 }
 
+// Add interface near the top with other interfaces
+interface AgentInstance {
+    runtime: IAgentRuntime;
+    db: IDatabaseAdapter & IDatabaseCacheAdapter;
+}
+
+// Add a map to track running agents
+const runningAgents = new Map<string, AgentInstance>();
+
+// Add reload function
+async function reloadAgent(character: Character, directClient) {
+    elizaLogger.info(`Reloading agent for character ${character.name}...`);
+
+    try {
+        const oldInstance = runningAgents.get(character.id);
+        if (oldInstance) {
+            // Cleanup old runtime
+            if (
+                oldInstance.runtime &&
+                typeof oldInstance.runtime.cleanup === "function"
+            ) {
+                await oldInstance.runtime.cleanup();
+            }
+            // Close old database connection
+            if (oldInstance.db) {
+                await oldInstance.db.close();
+            }
+        }
+
+        // Start new agent instance but don't reinitialize clients
+        const token = getTokenForProvider(character.modelProvider, character);
+        const dataDir = path.join(__dirname, "../data");
+
+        const db = initializeDatabase(dataDir) as IDatabaseAdapter &
+            IDatabaseCacheAdapter;
+        await db.init();
+
+        const cache = intializeDbCache(character, db);
+        const runtime = createAgent(character, db, cache, token);
+        await runtime.initialize();
+
+        // Register the new runtime with the existing direct client
+        directClient.registerAgent(runtime);
+        await injectArweavePapers(runtime);
+
+        // Store new instance
+        runningAgents.set(character.id, { runtime, db });
+
+        elizaLogger.success(
+            `Successfully reloaded agent for ${character.name}`
+        );
+    } catch (error) {
+        elizaLogger.error(
+            `Failed to reload agent for ${character.name}:`,
+            error
+        );
+    }
+}
+
+// Modify startAgents to store initial instances
 const startAgents = async () => {
     const directClient = await DirectClientInterface.start();
     const args = parseArguments();
 
     let charactersArg = args.characters || args.character;
-
     let characters = [mainCharacter];
 
     if (charactersArg) {
@@ -472,7 +532,15 @@ const startAgents = async () => {
 
     try {
         for (const character of characters) {
-            await startAgent(character, directClient);
+            // Start initial agent and store instance
+            const instance = await startAgent(character, directClient);
+            runningAgents.set(character.id, instance);
+
+            // Set up periodic reload every 6 hours
+            const THIRTY_MINUTES = 30 * 1000;
+            setInterval(async () => {
+                await reloadAgent(character, directClient);
+            }, THIRTY_MINUTES);
         }
     } catch (error) {
         elizaLogger.error("Error starting agents:", error);

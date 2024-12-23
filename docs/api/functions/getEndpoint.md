@@ -2,7 +2,7 @@
 
 # Function: getEndpoint()
 
-> **getEndpoint**(`provider`): `string`
+> **getEndpoint**(`provider`): `any`
 
 ## Parameters
 
@@ -10,8 +10,8 @@
 
 ## Returns
 
-`string`
+`any`
 
 ## Defined in
 
-[packages/core/src/models.ts:385](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/models.ts#L385)
+packages/core/src/models.ts:368

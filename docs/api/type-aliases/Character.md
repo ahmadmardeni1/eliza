@@ -342,4 +342,4 @@ Optional Twitter profile
 
 ## Defined in
 
-[packages/core/src/types.ts:609](https://github.com/ahmadmardeni1/eliza/blob/main/packages/core/src/types.ts#L609)
+packages/core/src/types.ts:608
